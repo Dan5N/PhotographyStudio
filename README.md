@@ -1,4 +1,6 @@
-# Photography Studio Workflow
+# Photography Studio
+
+Coursework project for **Software Design and Architecture**.
 
 A private, staff-only photography studio workflow for customer records, orders, shoots, photo selection, retouching and delivery. The application uses Next.js, tRPC, Prisma and PostgreSQL. It does not provide customer accounts, online payments, external messaging or automatic photo editing.
 
