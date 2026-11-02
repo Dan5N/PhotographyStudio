@@ -1,12 +1,11 @@
 import { test, expect } from "@playwright/test";
 
 test("manager can sign in and see real studio records", async ({ page }) => {
-  const password = process.env.DEMO_PASSWORD;
-  if (!password) throw new Error("Set DEMO_PASSWORD before browser tests.");
+  const password = "123456";
   await page.goto("/login");
-  await page.locator('input[name="username"]').fill("manager");
+  await page.locator('input[name="username"]').fill("admin");
   await page.locator('input[name="password"]').fill(password);
-  await page.getByRole("button", { name: /sign in/i }).click();
+  await page.getByRole("button", { name: /sign in|\u767b\u5f55/i }).click();
   await page.waitForURL("**/main", { timeout: 30000 });
   await expect(page.getByRole("heading", { name: "Photography Studio" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Customers", exact: true })).toBeVisible();
@@ -30,12 +29,11 @@ test("anonymous image upload is rejected before parsing the payload", async ({ r
 });
 
 test("authenticated image upload rejects an invalid request origin", async ({ page }) => {
-  const password = process.env.DEMO_PASSWORD;
-  if (!password) throw new Error("Set DEMO_PASSWORD before browser tests.");
+  const password = "123456";
   await page.goto("/login");
-  await page.locator('input[name="username"]').fill("manager");
+  await page.locator('input[name="username"]').fill("admin");
   await page.locator('input[name="password"]').fill(password);
-  await page.getByRole("button", { name: /sign in/i }).click();
+  await page.getByRole("button", { name: /sign in|\u767b\u5f55/i }).click();
   await page.waitForURL("**/main", { timeout: 30000 });
   const response = await page.request.post("/api/uploads", {
     headers: { origin: "https://invalid.example" },

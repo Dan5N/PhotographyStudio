@@ -36,6 +36,7 @@ Implement all Must requirements in Photography_Studio_SRS.md and the FR-DEL-06 r
 
 ## Known Gaps
 
+- Local coursework demonstrations use fixed administrator credentials `admin / 123456`, reset on each seed run. This configuration must not be exposed publicly or used with real data.
 - The original template includes unrelated editor/demo routes; the legacy rich-text editor now uses client-only loading to avoid the Node 22 server-rendering failure. Other unrelated template routes still need route-level acceptance.
 - Next.js 15.1.3 and several template dependencies are old; review and apply security updates before exposing the service beyond a trusted local network.
 - The current integration suite exercises domain services but does not yet cover the full HTTP upload lifecycle.

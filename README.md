@@ -30,7 +30,7 @@ docker compose up -d --build --wait
 
 To reproduce the installation on another computer, copy the project source (including `Dockerfile`, `docker-compose.yml`, `prisma/migrations/` and `pnpm-lock.yaml`) to that computer, install Docker with the Compose plugin, create a new `.env` with fresh secrets as above, then run the same command. No Node.js or pnpm installation is needed on the target computer. Use a free `APP_PORT` if port 3000 is occupied. The first start builds the images, waits for PostgreSQL, applies migrations, seeds the manager and starts the app. Confirm with `docker compose ps`; `db` and `app` should be healthy and `migrate` should have exited successfully. The target computer needs network access to pull the base images and package dependencies during the initial build.
 
-Open `http://localhost:3000`. The migration service applies database migrations and creates the initial studio data before the app starts. Sign in with the seeded `manager` account and the `DEMO_PASSWORD` value. Change the initial password before using this installation with real data.
+Open `http://localhost:3000`. The migration service applies database migrations and creates the initial studio data before the app starts. For local coursework demonstrations, sign in with username `admin` and password `123456`. Each seed run resets this administrator's credentials. `DEMO_PASSWORD` sets the initial password for the other demonstration staff accounts and must contain at least 12 characters. These fixed administrator credentials are for local demonstrations only; remove the reset behavior and set a strong password before any public deployment or use with real data.
 
 Check service state and logs:
 
@@ -68,7 +68,7 @@ pnpm test:integration
 pnpm test:e2e
 ```
 
-The integration tests require a reachable PostgreSQL database. Browser tests require `DEMO_PASSWORD` to match the seeded manager account; set `TEST_BASE_URL` to test a running deployment instead of the local development server. The current automated suite covers core workflow state transitions, concurrency and permission boundaries, image validation, login, customer listing and rejection of anonymous/cross-origin uploads; it does not yet cover a successful authenticated file upload/download lifecycle end to end.
+The integration tests require a reachable PostgreSQL database. Browser tests use the seeded `admin / 123456` demonstration account; set `TEST_BASE_URL` to test a running deployment instead of the local development server. The current automated suite covers core workflow state transitions, concurrency and permission boundaries, image validation, login, customer listing and rejection of anonymous/cross-origin uploads; it does not yet cover a successful authenticated file upload/download lifecycle end to end.
 
 ## Scope and status
 
