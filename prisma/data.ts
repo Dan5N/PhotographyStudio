@@ -1,0 +1,232 @@
+import { type Prisma } from "@prisma/client";
+export const users: Prisma.UserCreateInput[] = [
+  {
+    id: "clrhmuys30000qn1cq1whkroz",
+    username: "admin",
+    password: "e6e061838856bf47e1de730719fb2609",//admin@123
+    email: "admin@123.com",
+    emailVerified: null,
+    image: null,
+    role: "admin",
+  },
+  {
+    id: "clrlokwig000d1jgx5kju70wf",
+    username: "common",
+    password: "9efab2399c7c560b34de477b9aa0a465",//common
+    email: "common@123.com",
+    emailVerified: null,
+    image: null,
+    role: "common",
+  },
+  {
+    id: "clrlol83k000e1jgxfb8xxdbe",
+    username: "test",
+    password: "098f6bcd4621d373cade4e832627b4f6",//test
+    email: "test@123.com",
+    emailVerified: null,
+    image: null,
+    role: "test",
+  },
+];
+export const menus: Prisma.MenuCreateInput[] = [
+  {
+    id: "clrhh5o0o00031675y9aktyvw",
+    label: "404",
+    key: "/404",
+    icon: "WifiOff",
+    parent: null,
+    order: 11,
+    menuType: "M",
+    status: "0",
+  },
+  {
+    id: "clrhklkpb0003orke22p701sk",
+    label: "仪表板",
+    key: "/main",
+    icon: "LayoutDashboard",
+    parent: null,
+    order: 1,
+    menuType: "M",
+    status: "0",
+  },
+  {
+    id: "clrg0w3pq0003nw8qujdz6ybe",
+    label: "组件",
+    key: "/main/com",
+    icon: "Puzzle",
+    parent: null,
+    order: 3,
+    menuType: "D",
+    status: "0",
+  },
+  {
+    id: "clrg1c4rb00001675pxkkkko7",
+    label: "编辑器",
+    key: "/main/com/editor",
+    icon: "FilePenLine",
+    parent: "clrg0w3pq0003nw8qujdz6ybe",
+    order: 4,
+    menuType: "M",
+    status: "0",
+  },
+  {
+    id: "clrg0xzvj0004nw8qarow3brk",
+    label: "表格",
+    key: "/main/com/table",
+    icon: "Sheet",
+    parent: "clrg0w3pq0003nw8qujdz6ybe",
+    order: 5,
+    menuType: "M",
+    status: "0",
+  },
+  {
+    id: "clrhkj1nk0001orkekm8vurm2",
+    label: "菜单管理",
+    key: "/main/system/menu",
+    icon: "Settings",
+    parent: "clrhkhx7z0000orkeqpuq6txt",
+    order: 1,
+    menuType: "M",
+    status: "0",
+  },
+  {
+    id: "clrhkjv2p0002orkenu6kmc81",
+    label: "用户管理",
+    key: "/main/system/user",
+    icon: "SquareMenu",
+    parent: "clrhkhx7z0000orkeqpuq6txt",
+    order: 2,
+    menuType: "M",
+    status: "0",
+  },
+  {
+    id: "clrk0mq8y00005mcimjvdi7ix",
+    label: "角色管理",
+    key: "/main/system/role",
+    icon: "Users",
+    parent: "clrhkhx7z0000orkeqpuq6txt",
+    order: 3,
+    menuType: "M",
+    status: "0",
+  },
+  {
+    id: "clrhkhx7z0000orkeqpuq6txt",
+    label: "系统管理",
+    key: "/system",
+    icon: "UserCog",
+    parent: null,
+    order: 10,
+    menuType: "D",
+    status: "0",
+  },
+];
+
+export const roles: Prisma.RoleCreateInput[] = [
+  {
+    id: "clrk2rpjv0000cose6v98hzr0",
+    remark: "管理员",
+    roleName: "管理员",
+    roleKey: "admin",
+    order: 1,
+    status: "0",
+  },
+  {
+    id: "clrk85txe0004147bjctpul6y",
+    remark: "普通用户",
+    roleName: "普通用户",
+    roleKey: "common",
+    order: 2,
+    status: "0",
+  },
+  {
+    id: "clrkhgkej001q140scf4biveq",
+    remark: "测试用户",
+    roleName: "测试用户",
+    roleKey: "test",
+    order: 3,
+    status: "0",
+  },
+];
+
+export const ruleMenus: Prisma.RoleMenuCreateInput[] = [
+  {
+    id: "clrkictjr00094cjzo6h47hi6",
+    roleId: "common",
+    menuId: "/main",
+  },
+  {
+    id: "clrkictjr000a4cjzn05gbjv6",
+    roleId: "common",
+    menuId: "/404",
+  },
+  {
+    id: "clrkicyzq000b4cjzorxvaf8z",
+    roleId: "test",
+    menuId: "/main",
+  },
+  {
+    id: "clrkicyzq000c4cjz09yw9apx",
+    roleId: "test",
+    menuId: "/main/com",
+  },
+  {
+    id: "clrkicyzq000d4cjzi9q99uqp",
+    roleId: "test",
+    menuId: "/main/com/editor",
+  },
+  {
+    id: "clrkicyzq000e4cjz5s9r6805",
+    roleId: "test",
+    menuId: "/404",
+  },
+  {
+    id: "clrkicyzq000f4cjznap5vljo",
+    roleId: "test",
+    menuId: "/main/com/table",
+  },
+  {
+    id: "clrloawa300041jgx7ytzp0je",
+    roleId: "admin",
+    menuId: "/main/com/editor",
+  },
+  {
+    id: "clrloawa300051jgx0jyew3cj",
+    roleId: "admin",
+    menuId: "/main/com/table",
+  },
+  {
+    id: "clrloawa300061jgx6ooes3er",
+    roleId: "admin",
+    menuId: "/main/system/user",
+  },
+  {
+    id: "clrloawa800071jgxzaayyokj",
+    roleId: "admin",
+    menuId: "/main/system/role",
+  },
+  {
+    id: "clrloawa800081jgxcu8mta3a",
+    roleId: "admin",
+    menuId: "/system",
+  },
+  {
+    id: "clrloawa800091jgx7qznpssm",
+    roleId: "admin",
+    menuId: "/404",
+  },
+  {
+    id: "clrloawa9000a1jgxbkvvqevb",
+    roleId: "admin",
+    menuId: "/main",
+  },
+  {
+    id: "clrloawa9000b1jgx8np93cy7",
+    roleId: "admin",
+    menuId: "/main/system/menu",
+  },
+  {
+    id: "clrloawa9000c1jgx0uc18b7t",
+    roleId: "admin",
+    menuId: "/main/com",
+  },
+];

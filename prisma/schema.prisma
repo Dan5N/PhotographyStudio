@@ -1,0 +1,318 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Account_userId_relation")
+
+  @@unique([provider, providerAccountId])
+  @@index([userId], map: "Account_userId_fkey")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Session_userId_relation")
+
+  @@index([userId], map: "Session_userId_fkey")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  username      String
+  password      String
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          String
+  active        Boolean   @default(true)
+  editable      Boolean   @default(true)
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Menu {
+  id       String  @default(cuid())
+  label    String
+  key      String  @id @unique
+  icon     String
+  parent   String?
+  order    Int
+  menuType String
+  status   String  @db.Char(1)
+  editable Boolean @default(true)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Role {
+  id       String  @id @default(cuid())
+  remark   String?
+  roleName String
+  roleKey  String  @unique(map: "Rule_roleKey_key")
+  order    Int
+  status   String  @db.Char(1)
+  editable Boolean @default(true)
+}
+
+model UserRole {
+  id     String @id @default(cuid())
+  userId String
+  roleId String
+}
+
+model RoleMenu {
+  id     String @id @default(cuid())
+  roleId String
+  menuId String
+}
+
+enum OrderStage {
+  CREATED
+  SCHEDULED
+  AWAITING_SELECTION
+  RETOUCHING
+  READY_FOR_DELIVERY
+  AWAITING_ACKNOWLEDGEMENT
+  DELIVERED
+  CANCELLED
+}
+
+enum ShootStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  SUBMITTED
+  CHANGES_REQUESTED
+  APPROVED
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  email     String?
+  notes     String   @default("")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  orders    StudioOrder[]
+}
+
+model Package {
+  id            String   @id @default(cuid())
+  name          String
+  price         Decimal  @db.Decimal(12, 2)
+  retouchLimit  Int
+  revisionLimit Int
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+  orders        StudioOrder[]
+}
+
+model StudioOrder {
+  id                  String     @id @default(cuid())
+  number              String     @unique
+  customerId          String
+  packageId           String
+  packageName         String
+  price               Decimal    @db.Decimal(12, 2)
+  currency            String     @default("CNY")
+  retouchLimit        Int
+  revisionLimit       Int
+  requirements        String
+  deadline            DateTime   @db.Timestamptz(3)
+  stage               OrderStage @default(CREATED)
+  cancellationReason  String?
+  cancelledAt         DateTime?  @db.Timestamptz(3)
+  createdAt           DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime   @updatedAt @db.Timestamptz(3)
+  customer            Customer   @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  package             Package    @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  appointment         Appointment?
+  photos              Photo[]
+  selection           Selection?
+  tasks               RetouchTask[]
+  delivery            Delivery?
+
+  @@index([stage, deadline])
+  @@index([customerId])
+}
+
+model Appointment {
+  id             String      @id @default(cuid())
+  orderId        String      @unique
+  photographerId String
+  startsAt       DateTime    @db.Timestamptz(3)
+  endsAt         DateTime    @db.Timestamptz(3)
+  status         ShootStatus @default(SCHEDULED)
+  completedAt    DateTime?   @db.Timestamptz(3)
+  order          StudioOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  @@index([photographerId, startsAt])
+}
+
+model StoredAsset {
+  id           String   @id @default(cuid())
+  key          String   @unique
+  originalName String
+  mime         String
+  size         Int
+  uploaderId   String
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  photo        Photo?
+  version      PhotoVersion?
+}
+
+model Photo {
+  id        String      @id @default(cuid())
+  orderId   String
+  assetId   String      @unique
+  createdAt DateTime    @default(now()) @db.Timestamptz(3)
+  order     StudioOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  asset     StoredAsset @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  selected  SelectionItem?
+  task      RetouchTask?
+
+  @@index([orderId])
+}
+
+model Selection {
+  id          String      @id @default(cuid())
+  orderId     String      @unique
+  confirmedAt DateTime?   @db.Timestamptz(3)
+  confirmedBy String?
+  summary     String?
+  order       StudioOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  items       SelectionItem[]
+}
+
+model SelectionItem {
+  id          String    @id @default(cuid())
+  selectionId String
+  photoId     String    @unique
+  selection   Selection @relation(fields: [selectionId], references: [id], onDelete: Restrict)
+  photo       Photo     @relation(fields: [photoId], references: [id], onDelete: Restrict)
+
+  @@unique([selectionId, photoId])
+}
+
+model RetouchTask {
+  id                String        @id @default(cuid())
+  orderId           String
+  photoId           String        @unique
+  assigneeId        String?
+  deadline          DateTime?     @db.Timestamptz(3)
+  status            TaskStatus    @default(TODO)
+  approvedVersionId String?       @unique
+  approvedBy        String?
+  approvedAt        DateTime?     @db.Timestamptz(3)
+  approvalSummary   String?
+  order             StudioOrder   @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  photo             Photo         @relation(fields: [photoId], references: [id], onDelete: Restrict)
+  versions          PhotoVersion[] @relation("TaskVersions")
+  approvedVersion   PhotoVersion? @relation("ApprovedVersion", fields: [approvedVersionId], references: [id], onDelete: Restrict)
+  requests          RevisionRequest[]
+
+  @@index([assigneeId, status])
+  @@index([orderId])
+}
+
+model PhotoVersion {
+  id           String        @id @default(cuid())
+  taskId       String
+  number       Int
+  assetId      String        @unique
+  submitterId  String
+  createdAt    DateTime      @default(now()) @db.Timestamptz(3)
+  task         RetouchTask   @relation("TaskVersions", fields: [taskId], references: [id], onDelete: Restrict)
+  asset        StoredAsset   @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  approvedTask RetouchTask?  @relation("ApprovedVersion")
+  requests     RevisionRequest[] @relation("RequestedVersion")
+  responses    RevisionRequest[] @relation("ResponseVersion")
+  deliveries   DeliveryItem[]
+
+  @@unique([taskId, number])
+}
+
+model RevisionRequest {
+  id                String        @id @default(cuid())
+  taskId            String
+  versionId         String
+  feedback          String
+  requestedBy       String
+  createdAt         DateTime      @default(now()) @db.Timestamptz(3)
+  resolvedAt        DateTime?     @db.Timestamptz(3)
+  responseVersionId String?       @unique
+  task              RetouchTask   @relation(fields: [taskId], references: [id], onDelete: Restrict)
+  version           PhotoVersion  @relation("RequestedVersion", fields: [versionId], references: [id], onDelete: Restrict)
+  responseVersion   PhotoVersion? @relation("ResponseVersion", fields: [responseVersionId], references: [id], onDelete: Restrict)
+
+  @@index([taskId])
+}
+
+model Delivery {
+  id           String        @id @default(cuid())
+  orderId      String        @unique
+  senderId     String
+  sentAt       DateTime      @default(now()) @db.Timestamptz(3)
+  channel      String
+  reference    String
+  acknowledgedAt DateTime?   @db.Timestamptz(3)
+  acknowledgedBy String?
+  acknowledgementSummary String?
+  order        StudioOrder   @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  items        DeliveryItem[]
+}
+
+model DeliveryItem {
+  id         String       @id @default(cuid())
+  deliveryId String
+  photoId    String
+  versionId  String
+  delivery   Delivery     @relation(fields: [deliveryId], references: [id], onDelete: Restrict)
+  version    PhotoVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+
+  @@unique([deliveryId, photoId])
+}
+
+model AuditEvent {
+  id        String   @id @default(cuid())
+  actorId   String
+  targetId  String
+  action    String
+  detail    Json
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([targetId, createdAt])
+  @@index([action, createdAt])
+}

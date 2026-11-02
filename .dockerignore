@@ -1,0 +1,10 @@
+node_modules
+.next
+.env
+.env.*
+!.env.example
+.git
+.studio-assets
+test-results
+playwright-report
+*.docx
