@@ -9,9 +9,9 @@ import { Toaster } from "@/components/ui/toaster";
 const i18nNamespaces = ["common", "menu", "dashboard"];
 
 export const metadata = {
-  title: "Ray Admin",
-  description: "Welcome Ray Admin",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  title: "Photography Studio",
+  description: "Photography Studio staff workflow for orders, shoots, retouching and delivery.",
+  icons: [{ rel: "icon", url: "/favicon.svg", type: "image/svg+xml" }],
 };
 
 export default async function RootLayout(props: { children: React.ReactNode; params: Promise<{ locale: string }> }) {

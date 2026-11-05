@@ -8,6 +8,7 @@ Local, staff-only single-studio coursework demonstration. Manager login is inten
 
 ## Accepted Release
 
+- Branding is consistently Photography Studio: browser title/description, package identity, icon metadata and camera favicon. Production login/main title assertions and all 4 non-writing browser checks passed after the branding update; demo data and credentials were unchanged.
 - Formal project `photography-studio` runs the accepted release. App and PostgreSQL are healthy; `/api/ready` returns ready. Existing named volumes and `DEMO-001` were retained without a destructive volume reset. The documented default URL is `http://localhost:3000`.
 - Demo-only cleanup completed on 2026-11-06: 4 seeded staff, Alex Chen, Portrait Session and `DEMO-001` at CREATED remain. Removed integration accounts and related test business/workflow/asset/audit records. All 4 non-writing browser checks passed afterwards. Paired backups are retained privately outside the repository. Isolated acceptance containers, data volumes, networks and obsolete test images have been removed; historical recovery evidence remains in private archives.
 - Next.js 16.4.5, React 19.0.9, NextAuth 4.24.15, Prisma 7.10.1 with PostgreSQL adapter, PostgreSQL 16, Node 24, pnpm 10.34.9. Native TypeScript 7.0.2 checks source; Next.js/ESLint use TypeScript 6.0.2 compatibility API.

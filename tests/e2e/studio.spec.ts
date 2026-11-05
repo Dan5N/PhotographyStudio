@@ -209,11 +209,13 @@ test("five staff sessions read 100 orders and 500 photo records", async ({ playw
 
 test("manager can sign in and see real studio records", async ({ page }) => {
   await page.goto("/login");
+  await expect(page).toHaveTitle("Photography Studio");
   await page.locator('input[name="username"]').fill("admin");
   await page.locator('input[name="password"]').fill(adminPassword);
   await page.getByRole("button", { name: /sign in|\u767b\u5f55/i }).click();
   await page.waitForURL("**/main", { timeout: 30000 });
   await expect(page.getByRole("heading", { name: "Photography Studio" })).toBeVisible();
+  await expect(page).toHaveTitle("Photography Studio");
   await expect(page.getByText("DEMO-001", { exact: false })).toBeVisible();
   await page.getByRole("tab", { name: "Packages", exact: true }).click();
   await expect(page.getByText("Portrait Session", { exact: false })).toBeVisible();
