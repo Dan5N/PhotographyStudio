@@ -4,7 +4,7 @@ import { type NextRequest } from "next/server";
 import { env } from "@/env";
 import { appRouter } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
-import { ProcedureType, TRPCError } from "@trpc/server";
+import { type ProcedureType, type TRPCError } from "@trpc/server";
 import { redirect } from "next/navigation";
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when

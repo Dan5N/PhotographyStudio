@@ -1,4 +1,4 @@
-import i18nConfig from "i18nConfig";
+import i18nConfig from "../../../i18nConfig";
 import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
 // import translation from './en/translation.json';
@@ -28,7 +28,7 @@ function getLanguageRoute(): string | null {
   const path = urlObj.pathname;
 
   // 使用正则表达式匹配两位的字母组合
-  const match = path.match(/\/([a-z]{2})\//);
+  const match = /\/([a-z]{2})\//.exec(path);
 
   if (match?.[1] && i18nConfig.locales.includes(match[1])) {
     return match[1];

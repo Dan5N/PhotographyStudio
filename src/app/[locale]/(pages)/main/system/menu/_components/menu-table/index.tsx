@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { type Menu } from "@prisma/client";
 import { Plus } from "lucide-react";
-import React, { useMemo, useRef } from "react";
+import React, { useState } from "react";
 import { createColumns } from "./columns";
 import { api } from "@/trpc/react";
 import { reload } from "@/app/actions";
@@ -17,7 +17,7 @@ interface MenuTableProps {
 function MenuTable(params: MenuTableProps) {
   const { list, total } = params;
   const pathName = usePathname();
-  const menuDialogRef = useRef<MenuDialogRefType>(null);
+  const [menuDialog, setMenuDialog] = useState<MenuDialogRefType | null>(null);
   const menuDeleteApi = api.menu.deleteMenuById.useMutation({
     onSuccess() {
       reloadList();
@@ -30,10 +30,8 @@ function MenuTable(params: MenuTableProps) {
   const deleteMenu = (key: string) => {
     menuDeleteApi.mutate({ key });
   };
-  const columns = useMemo(
-    () => createColumns(menuDialogRef, deleteMenu),
-    [],
-  );
+  const openDialog: MenuDialogRefType["setModel"] = (...args) => menuDialog?.setModel(...args);
+  const columns = createColumns(openDialog, deleteMenu);
   return (
     <div>
       <div className="flex items-start justify-end">
@@ -41,7 +39,7 @@ function MenuTable(params: MenuTableProps) {
           size="sm"
           variant="outline"
           onClick={() => {
-            menuDialogRef.current?.setModel(true, "add");
+            menuDialog?.setModel(true, "add");
           }}
         >
           <Plus className="mr-2 h-4 w-4" /> 新增菜单
@@ -49,7 +47,7 @@ function MenuTable(params: MenuTableProps) {
       </div>
       <Separator className="mb-4 mt-4" />
       <DataTable columns={columns} data={list} totalItems={total} />
-      <MenuDialog ref={menuDialogRef} reloadList={reloadList} />
+      <MenuDialog ref={setMenuDialog} reloadList={reloadList} />
     </div>
   );
 }

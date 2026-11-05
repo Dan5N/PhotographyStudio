@@ -1,4 +1,4 @@
-import { Prisma, type PrismaClient } from "@prisma/client";
+import { type Prisma, type PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { requireAssigned, requireOffice, type Actor } from "./permissions";
 
@@ -117,12 +117,13 @@ export async function changeTask(database: PrismaClient, actor: Actor, input: { 
     requireOffice(actor);
     if (input.action === "assign") {
       const staff = input.assigneeId ? await tx.user.findUnique({ where: { id: input.assigneeId } }) : null;
-      if (!staff?.active || staff.role !== "RETOUCHER" || !input.deadline || input.deadline > task.order.deadline) reject("Choose an active retoucher and a task deadline no later than the order deadline.");
+      if (!staff?.active || staff?.role !== "RETOUCHER" || !input.deadline || input.deadline > task.order.deadline) reject("Choose an active retoucher and a task deadline no later than the order deadline.");
       if (task.assigneeId && !input.summary?.trim()) reject("A reassignment reason is required.");
       await audit(tx, actor, task.orderId, "TASK_ASSIGNED", { taskId: task.id, before: task.assigneeId, after: staff.id, deadline: input.deadline.toISOString(), reason: input.summary ?? "" });
       return tx.retouchTask.update({ where: { id: task.id }, data: { assigneeId: staff.id, deadline: input.deadline } });
     }
-    if (task.status !== "SUBMITTED" || !current || current.id !== input.versionId || !input.summary?.trim()) reject("Review the current submitted version and record customer feedback.");
+    if (!current) reject("No submitted version exists.");
+    if (task.status !== "SUBMITTED" || current.id !== input.versionId || !input.summary?.trim()) reject("Review the current submitted version and record customer feedback.");
     if (input.action === "request") {
       if (task.requests.some((request) => !request.resolvedAt)) reject("Resolve the outstanding revision first.");
       if (task.requests.length >= task.order.revisionLimit) reject("The per-photo revision allowance is exhausted.");
@@ -149,7 +150,7 @@ export async function sendDelivery(database: PrismaClient, actor: Actor, input: 
     if (order.stage !== "READY_FOR_DELIVERY" || !selected.length || selected.length !== order.tasks.length || !selected.every((item) => order.tasks.some((task) => task.photoId === item.photoId && task.status === "APPROVED" && task.approvedVersionId))) reject("Delivery requires the exact fully approved confirmed selection.");
     const delivery = await tx.delivery.create({ data: {
       orderId: order.id, senderId: actor.id, channel: input.channel, reference: input.reference,
-      items: { create: order.tasks.map((task) => ({ photoId: task.photoId, versionId: task.approvedVersionId! })) },
+      items: { create: order.tasks.map((task) => ({ photoId: task.photoId, versionId: task.approvedVersionId })) },
     } });
     await tx.studioOrder.update({ where: { id: order.id }, data: { stage: "AWAITING_ACKNOWLEDGEMENT" } });
     await audit(tx, actor, order.id, "DELIVERY_SENT", { deliveryId: delivery.id, channel: input.channel, reference: input.reference });

@@ -21,13 +21,13 @@ import { type TreeDataItem, TreeView } from "../tree-view";
 import {
   forwardRef,
   type HTMLInputTypeAttribute,
-  ReactNode,
+  type ReactNode,
   type Ref,
   useImperativeHandle,
   useMemo,
 } from "react";
 import { z } from "zod";
-import { useForm, type UseFormReturn } from "react-hook-form";
+import { useForm, type UseFormReturn, type ControllerRenderProps } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -61,14 +61,6 @@ function Index(
   { formItems, onSubmit, ...props }: ConfigFormProps,
   ref: Ref<ConfigFromRef>,
 ) {
-  useImperativeHandle<ConfigFromRef, ConfigFromRef>(
-    ref,
-    () => ({
-      setFormData,
-      form,
-    }),
-    [],
-  );
   const formSchema = useMemo(() => {
     const schemaMap: Record<FormItemType["key"], z.ZodSchema | undefined> = {};
     formItems.forEach((item) => {
@@ -88,12 +80,20 @@ function Index(
     defaultValues,
   });
 
-  const setFormData = (data: Record<string, any>) => {
-    Object.keys(data).forEach((key) => {
-      form.setValue(key, data[key]);
-    });
-  };
-  const getField = (item: FormItemType, field) => {
+  useImperativeHandle<ConfigFromRef, ConfigFromRef>(
+    ref,
+    () => ({
+      setFormData: (data) => {
+        Object.entries(data).forEach(([key, value]) => {
+          form.setValue(key, value);
+        });
+      },
+      form,
+    }),
+    [form],
+  );
+
+  const getField = (item: FormItemType, field: ControllerRenderProps<Record<string, string | number | string[]>>) => {
     switch (item.type) {
       case "Input":
         return (
@@ -113,7 +113,7 @@ function Index(
           <Select
             {...field}
             onValueChange={field.onChange}
-            defaultValue={field.value}
+            value={typeof field.value === "string" ? field.value : ""}
             disabled={item.disabled}
           >
             <SelectTrigger className="w-full">
@@ -121,7 +121,7 @@ function Index(
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {item.options.map((option) => (
+                {(item.options as Option<string>[]).map((option) => (
                   <SelectItem value={option.key} key={option.key}>
                     {option.title}
                   </SelectItem>
@@ -144,10 +144,10 @@ function Index(
           <RadioGroup
             disabled={item.disabled}
             onValueChange={field.onChange}
-            defaultValue={field.value}
+            value={typeof field.value === "string" ? field.value : ""}
             className="flex gap-2"
           >
-            {item.options.map((option) => (
+            {(item.options as Option<string>[]).map((option) => (
               <FormItem
                 className="flex items-center space-x-3 space-y-0"
                 key={option.key}
@@ -168,7 +168,7 @@ function Index(
               multiple={item.multiple}
               data={item.options as TreeDataItem[]}
               onSelectChange={field.onChange}
-              initialSelectedItemId={field.value}
+              initialSelectedItemId={Array.isArray(field.value) ? field.value : []}
             />
           </div>
         );

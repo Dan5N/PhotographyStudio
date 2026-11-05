@@ -14,7 +14,7 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default async function RootLayout(props) {
+export default async function RootLayout(props: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
   const params = await props.params;
 
   const {
@@ -22,14 +22,14 @@ export default async function RootLayout(props) {
   } = props;
 
   const { resources } = await initTranslations(
-    params.locale as string,
+    params.locale,
     i18nNamespaces,
   );
   return (
     (<TRPCReactProvider cookies={(await cookies()).toString()}>
       <TranslationsProvider
         namespaces={i18nNamespaces}
-        locale={params.locale as string}
+        locale={params.locale}
         resources={resources}
       >
         <Toaster />

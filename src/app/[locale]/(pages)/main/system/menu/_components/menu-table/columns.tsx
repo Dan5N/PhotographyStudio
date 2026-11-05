@@ -7,7 +7,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { type MenuDialogRefType } from "../menu-dialog";
 import { useToast } from "@/hooks/use-toast";
 export const createColumns = (
-  menuDialogRef: React.MutableRefObject<MenuDialogRefType>,
+  openDialog: MenuDialogRefType["setModel"],
   deleteMenu: (id: string) => void,
 ): ColumnDef<Menu & { parentMenu?: Menu }>[] => {
   return [
@@ -65,7 +65,7 @@ export const createColumns = (
               title: "编辑",
               disabled: !row.original.editable,
               action: () =>
-                menuDialogRef?.current.setModel(true, "edit", row.original),
+                openDialog(true, "edit", row.original),
             },
           ]}
         />

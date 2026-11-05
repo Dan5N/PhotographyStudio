@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { type Card } from "../conts";
 import { type CountUp } from "countup.js";
 import {
@@ -13,20 +13,16 @@ import { useTranslation } from "react-i18next";
 function HomeCard({ info }: { info: Card }) {
   const { t } = useTranslation("dashboard");
   const countupRef = useRef<HTMLHeadingElement>(null);
-  let countUpAnim: CountUp;
   useEffect(() => {
-    initCountUp();
-  }, []);
-
-  async function initCountUp() {
-    const countUpModule = await import("countup.js");
-    countUpAnim = new countUpModule.CountUp(countupRef.current, info.numb);
-    if (!countUpAnim.error) {
-      countUpAnim.start();
-    } else {
-      console.error(countUpAnim.error);
-    }
-  }
+    let disposed = false;
+    let animation: CountUp | undefined;
+    void import("countup.js").then(({ CountUp }) => {
+      if (disposed || !countupRef.current) return;
+      animation = new CountUp(countupRef.current, info.numb);
+      if (!animation.error) animation.start();
+    });
+    return () => { disposed = true; animation?.reset(); };
+  }, [info.numb]);
   return (
     <CardContainer className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

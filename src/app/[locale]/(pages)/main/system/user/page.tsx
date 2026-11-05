@@ -2,10 +2,10 @@ import PageContainer from "@/components/layout/page-container";
 import UserTable from "./_components/user-table";
 import { api } from "@/trpc/server";
 import { searchParamsCache } from "@/lib/search-params";
-import { SearchParams } from "nuqs";
+import { type SearchParams } from "nuqs";
 
 type pageProps = {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 };
 const UserList: React.FC = async (props: pageProps) => {
   const searchParams = await props.searchParams;

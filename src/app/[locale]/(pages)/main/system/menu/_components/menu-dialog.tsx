@@ -35,7 +35,7 @@ function Index(params: MenuDialogType, ref: Ref<MenuDialogRefType>) {
   const setModel = (open: boolean, type: ViewType, menu?: Menu) => {
     setOpen(open);
     setViewType(type);
-    menu && setId(menu.id);
+    setId(menu?.id);
     if (open) {
       if (menu && ["view", "edit"].includes(type)) {
         requestAnimationFrame(()=>{

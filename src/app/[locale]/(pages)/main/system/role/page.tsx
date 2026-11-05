@@ -2,9 +2,9 @@ import PageContainer from "@/components/layout/page-container";
 import RoleTable from "./_components/role-table";
 import { searchParamsCache } from "@/lib/search-params";
 import { api } from "@/trpc/server";
-import { SearchParams } from "nuqs";
+import { type SearchParams } from "nuqs";
 type pageProps = {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 };
 const RoleList: React.FC = async (props: pageProps) => {
   const searchParams = await props.searchParams;

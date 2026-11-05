@@ -12,7 +12,7 @@ import { type z } from "zod";
 import {
   forwardRef,
   type HTMLInputTypeAttribute,
-  ReactNode,
+  type ReactNode,
   type Ref,
   useImperativeHandle,
   useRef,
@@ -55,6 +55,10 @@ function Index(
   ref: Ref<FromDialogRef>,
 ) {
   const configFormRef = useRef<ConfigFromRef>(null);
+  const setFormData = (data: Record<string, any>) => {
+    configFormRef.current?.setFormData(data);
+  };
+
   useImperativeHandle<FromDialogRef, FromDialogRef>(
     ref,
     () => ({
@@ -62,10 +66,6 @@ function Index(
     }),
     [],
   );
-
-  const setFormData = (data: Record<string, any>) => {
-    configFormRef.current?.setFormData(data);
-  };
 
   function submit(values) {
     onSubmit(values);

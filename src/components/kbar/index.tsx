@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useTransition } from "react";
 import RenderResults from "./render-result";
 import useThemeSwitching from "./use-theme-switching";
-import { MenuType } from "@/app/types/menu";
+import { type MenuType } from "@/app/types/menu";
 import { useTranslation } from "react-i18next";
 export interface NavItem {
   title: string;

@@ -8,3 +8,11 @@ node_modules
 test-results
 playwright-report
 *.docx
+backups
+*.dump
+*.tar
+*.zip
+*.log
+.vscode
+.idea
+docker-compose.yml

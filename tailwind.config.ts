@@ -1,5 +1,6 @@
 import { type Config } from "tailwindcss";
 import { fontFamily, screens } from "tailwindcss/defaultTheme";
+import animate from "tailwindcss-animate";
 export default {
   darkMode: ["class"],
   content: ["./src/**/*.tsx"],
@@ -72,6 +73,5 @@ export default {
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  plugins: [require("tailwindcss-animate")],
+  plugins: [animate],
 } satisfies Config;

@@ -1,5 +1,5 @@
 "use client";
-import { MenuType } from "@/app/types/menu";
+import { type MenuType } from "@/app/types/menu";
 import {
   Breadcrumb,
   BreadcrumbItem,

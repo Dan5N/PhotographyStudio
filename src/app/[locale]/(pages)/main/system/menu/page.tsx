@@ -1,11 +1,11 @@
 import PageContainer from "@/components/layout/page-container";
 import MenuTable from "./_components/menu-table";
 import { api } from "@/trpc/server";
-import { SearchParams } from "nuqs";
+import { type SearchParams } from "nuqs";
 import { searchParamsCache } from "@/lib/search-params";
 
 type pageProps = {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 };
 const MenuList: React.FC = async (props: pageProps) => {
   const searchParams = await props.searchParams;

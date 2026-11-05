@@ -1,6 +1,6 @@
 "use client";
 
-import { MenuType } from "@/app/types/menu";
+import { type MenuType } from "@/app/types/menu";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 

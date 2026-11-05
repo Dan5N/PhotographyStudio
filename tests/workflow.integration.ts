@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { randomUUID } from "node:crypto";
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { schedule, completeShoot, selectPhotos, changeTask, sendDelivery, acknowledgeDelivery, cancelOrder } from "../src/server/workflow";
 
 test("FR: workflow, conflict checks, atomic selection, revisions and exact delivery", async () => {
-  const db = new PrismaClient();
+  const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL, connectionTimeoutMillis: 5000 }) });
   const suffix = randomUUID();
   const manager = { id: `manager-${suffix}`, role: "MANAGER" };
   const photographer = { id: `photographer-${suffix}`, role: "PHOTOGRAPHER" };
@@ -15,7 +16,7 @@ test("FR: workflow, conflict checks, atomic selection, revisions and exact deliv
     const customer = await db.customer.create({ data: { name: "Integration customer", phone: "123" } });
     const pack = await db.package.create({ data: { name: "Integration package", price: "100.00", retouchLimit: 1, revisionLimit: 1 } });
     const reschedulePhotographer = await db.user.create({ data: { id: `reschedule-photographer-${suffix}`, username: `reschedule-photographer-${suffix}`, password: "unused", role: "PHOTOGRAPHER" } });
-    const create = () => db.studioOrder.create({ data: { number: randomUUID(), customerId: customer.id, packageId: pack.id, packageName: pack.name, price: pack.price, retouchLimit: 1, revisionLimit: 1, requirements: "Test", deadline: new Date("2030-12-31") } });
+    const create = () => db.studioOrder.create({ data: { number: randomUUID(), customerId: customer.id, packageId: pack.id, packageName: pack.name, price: "100.00", retouchLimit: 1, revisionLimit: 1, requirements: "Test", deadline: new Date("2030-12-31") } });
     const [order, other] = await Promise.all([create(), create()]);
     const [raceFirst, raceSecond] = await Promise.all([create(), create()]);
     const race = await Promise.allSettled([raceFirst, raceSecond].map((record) => schedule(db, manager, { orderId: record.id, photographerId: photographer.id, startsAt: new Date("2030-02-01T10:00:00Z"), endsAt: new Date("2030-02-01T11:00:00Z") })));

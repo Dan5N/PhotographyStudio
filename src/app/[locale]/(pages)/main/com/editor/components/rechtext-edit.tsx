@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 import { Editor, Toolbar } from "@wangeditor/editor-for-react";
-import { IDomEditor, IEditorConfig, IToolbarConfig } from "@wangeditor/editor";
+import { type IDomEditor, type IEditorConfig, type IToolbarConfig } from "@wangeditor/editor";
 import { CardContainer } from "@/components/card-container";
 
 function RichTextEditor() {

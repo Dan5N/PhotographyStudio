@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { House } from "lucide-react";
 import initTranslations from "./i18n";
 import { cookies } from "next/headers";
+import Link from "next/link";
 
 export default async function Index() {
   const locale = (await cookies()).get("NEXT_LOCALE")?.value || "cn";
@@ -15,11 +16,11 @@ export default async function Index() {
             <p className="mb-8 mt-4 text-2xl font-medium">
               {t("Oops! Page not found")}
             </p>
-            <Button>
-              <a href="/" className="flex items-center gap-2">
+            <Button asChild>
+              <Link href="/" className="flex items-center gap-2">
                 <House />
                 {t("Go Home")}
-              </a>
+              </Link>
             </Button>
           </div>
         </div>

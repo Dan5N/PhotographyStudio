@@ -8,7 +8,7 @@ import { STATUS } from "@/app/[locale]/constant";
 import { type RoleModalRefType } from "../role-dialog";
 
 export const createColumns = (
-  ruleModalRef: React.MutableRefObject<RoleModalRefType>,
+  openDialog: RoleModalRefType["setModel"],
   deleteRole: (id: string) => void,
 ): ColumnDef<Role>[] => {
   return [
@@ -19,7 +19,7 @@ export const createColumns = (
         <Button
           variant="link"
           onClick={() =>
-            ruleModalRef.current?.setModel(true, "view", row.original)
+            openDialog(true, "view", row.original)
           }
         >
           {row.getValue("roleName")}
@@ -59,7 +59,7 @@ export const createColumns = (
             {
               title: "编辑",
               action: () =>
-                ruleModalRef.current?.setModel(true, "edit", row.original),
+                openDialog(true, "edit", row.original),
             },
           ]}
         />

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactElement, ReactNode, useEffect } from "react";
+import React from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronRight } from "lucide-react";
 import { cva } from "class-variance-authority";
@@ -53,16 +53,9 @@ const TreeView = React.forwardRef<HTMLDivElement, TreeProps>(
     },
     ref,
   ) => {
-    const [selectedItemId, setSelectedItemId] = React.useState<
-      string[] | undefined
-    >(initialSelectedItemId);
-
-    useEffect(() => {
-      setSelectedItemId(initialSelectedItemId);
-    }, [initialSelectedItemId]);
-
     const handleSelectChange = React.useCallback(
       (item: TreeDataItem | undefined) => {
+        if (!item || disabled) return;
         let selectedItems: string[] = [];
         if (initialSelectedItemId.includes(item?.id)) {
           selectedItems = initialSelectedItemId.filter((id) => id != item.id);
@@ -75,7 +68,7 @@ const TreeView = React.forwardRef<HTMLDivElement, TreeProps>(
           onSelectChange(selectedItems);
         }
       },
-      [onSelectChange],
+      [onSelectChange, initialSelectedItemId, multiple, disabled],
     );
 
     const expandedItemIds = React.useMemo(() => {
@@ -90,9 +83,9 @@ const TreeView = React.forwardRef<HTMLDivElement, TreeProps>(
         targetId: string,
       ) {
         if (items instanceof Array) {
-          for (let i = 0; i < items.length; i++) {
-            ids.push(items[i]!.id);
-            if (walkTreeItems(items[i]!, targetId) && !expandAll) {
+          for (const item of items) {
+            ids.push(item.id);
+            if (walkTreeItems(item, targetId) && !expandAll) {
               return true;
             }
             if (!expandAll) ids.pop();

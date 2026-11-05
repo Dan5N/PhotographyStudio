@@ -19,9 +19,9 @@ export async function POST(request: Request) {
   try {
     const form = await request.formData();
     const file = form.get("file");
-    const target = String(form.get("target") ?? "");
-    const kind = String(form.get("kind") ?? "");
-    if (!(file instanceof File) || !target || !["original", "version"].includes(kind)) throw new Error("Choose an image and a valid destination.");
+    const target = form.get("target");
+    const kind = form.get("kind");
+    if (!(file instanceof File) || typeof target !== "string" || !target || typeof kind !== "string" || !["original", "version"].includes(kind)) throw new Error("Choose an image and a valid destination.");
     if (file.size > maximumFileSize) throw new Error("Image exceeds 5 MiB.");
     const task = kind === "version" ? await db.retouchTask.findUniqueOrThrow({ where: { id: target } }) : null;
     const orderId = task?.orderId ?? target;

@@ -9,12 +9,7 @@ const config = {
   output: "standalone",
   reactStrictMode: false,
   transpilePackages: ["lucide-react"],
-  experimental: {
-    reactCompiler: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  reactCompiler: true,
   async redirects() {
     return [
       {
@@ -30,7 +25,6 @@ const config = {
         type: "memory",
       });
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return config;
   },
 };

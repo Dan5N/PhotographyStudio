@@ -25,9 +25,9 @@ import {
   Dock,
   Logs,
   AlignJustify,
-  LucideProps,
+  type LucideProps,
 } from "lucide-react";
-import { ForwardRefExoticComponent, ReactNode, RefAttributes } from "react";
+import { type ForwardRefExoticComponent, type ReactNode, type RefAttributes } from "react";
 
 export const MENU_TYPE_MAP: Record<string, ReactNode> = {
   M: <Badge color="green">菜单</Badge>,

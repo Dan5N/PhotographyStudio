@@ -1,14 +1,13 @@
 import { useTheme } from "next-themes";
-import React, { useEffect, useState } from "react";
+import React, { useSyncExternalStore } from "react";
+
+const subscribe = () => () => undefined;
+const getSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 function ThemeChanger() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const { theme, setTheme } = useTheme();
-
-  // useEffect only runs on the client, so now we can safely show the UI
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   if (!mounted) {
     return null;

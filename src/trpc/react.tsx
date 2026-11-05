@@ -7,7 +7,7 @@ import { useCallback, useState } from "react";
 
 import { type AppRouter } from "@/server/api/root";
 import { getUrl, transformer } from "./shared";
-import { TRPCError } from "@trpc/server";
+import { type TRPCError } from "@trpc/server";
 import { useToast } from "@/hooks/use-toast";
 
 export const api = createTRPCReact<AppRouter>();

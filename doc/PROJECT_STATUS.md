@@ -1,45 +1,32 @@
 # Project Status
 
-Updated: 2026-11-02
+Updated: 2026-11-06
 
-## Target
+## Delivery Target
 
-Implement all Must requirements in Photography_Studio_SRS.md and the FR-DEL-06 reports. Deliver a tested, Docker-deployable single-studio internal workflow. No customer portal, payment, messaging, or automatic editing.
+Local, staff-only single-studio coursework demonstration. Manager login is intentionally `admin / 123456`, as requested. No public exposure or real personal data. External file transfer is manual, not performed by the application.
 
-## Verified
+## Accepted Release
 
-- Read both Markdown requirement documents in full.
-- Confirmed manager may perform reception decisions, but only assigned photographers/retouchers may perform their specialist actions.
-- Defaults: CNY, Asia/Shanghai; fresh database, no legacy data migration.
-- Host tools: Node 24.15.0, pnpm 8.13.1, Docker 29.7.2, Compose 5.5.1.
-- Repository is a source snapshot without Git metadata, installed dependencies, or environment configuration.
-- Corrected Prisma provider to postgresql.
-- Added initial customer/package/order/shoot/photo/selection/task/version/revision/delivery/audit schema.
-- Prisma 5.22.0 schema validation and client generation passed.
-- PostgreSQL 16 applied both migrations; the studio seed ran twice without overwriting existing records.
-- Unit tests pass for salted password verification and JPEG/PNG content validation (2 tests).
-- PostgreSQL workflow integration passes for scheduling races (serialized with a photographer-scoped transaction lock), order locking, selection idempotency/freeze, assignment and role boundaries, revisions, approvals, delivery manifests and acknowledgement.
-- TypeScript typecheck passes.
-- Playwright production Docker checks pass for manager sign-in/customer listing, anonymous private-file rejection, anonymous upload rejection (401) and authenticated cross-origin upload rejection (403); desktop/mobile screenshots are generated under `test-results/`.
-- A clean, new Compose project and fresh named volumes build successfully; PostgreSQL health, migration/seed completion and app `/api/ready` health checks pass. Production browser checks pass against the clean deployment.
-- The order detail API now filters photographer and retoucher access by assignment, matching the order-list scope.
+- Formal project `photography-studio` runs the accepted release. App and PostgreSQL are healthy; `/api/ready` returns ready. Existing named volumes and `DEMO-001` were retained without a destructive volume reset. The documented default URL is `http://localhost:3000`.
+- Demo-only cleanup completed on 2026-11-06: 4 seeded staff, Alex Chen, Portrait Session and `DEMO-001` at CREATED remain. Removed integration accounts and related test business/workflow/asset/audit records. All 4 non-writing browser checks passed afterwards. Paired backups are retained privately outside the repository. Isolated acceptance containers, data volumes, networks and obsolete test images have been removed; historical recovery evidence remains in private archives.
+- Next.js 16.4.5, React 19.0.9, NextAuth 4.24.15, Prisma 7.10.1 with PostgreSQL adapter, PostgreSQL 16, Node 24, pnpm 10.34.9. Native TypeScript 7.0.2 checks source; Next.js/ESLint use TypeScript 6.0.2 compatibility API.
+- Full lint: 0 errors, 36 warnings. Typecheck and 2 unit tests pass. Remaining warnings include legacy hook dependencies, unused code, private image previews and TanStack Table compiler compatibility.
+- Final Linux production build passed. Both migrations applied to a new isolated database; workflow integration passed. The earlier local integration failure was an unreachable database, not a confirmed schema defect.
+- Final isolated candidate passed 6 HTTP/browser checks: assigned upload/revision/approval/exact delivery; existing-file baseline; manager records/staff dialog; anonymous file denial; anonymous upload denial; invalid-origin denial.
+- Consistent candidate backup contained 6 real asset files. Restoration into separate fresh PostgreSQL/asset volumes passed 5 checks, including unchanged delivery version linkage and exact approved JPEG bytes. All 6 asset SHA-256 hashes matched. App/database restart passed the existing-file check.
+- Performance: 100 orders/500 real PNG records, five distinct reception sessions, 5 warmup iterations/session, then 200 list and 200 detail requests. List p95 24 ms, detail p95 25 ms; maximum 29 ms for both; no failed requests. Results are environment-specific; host configuration is intentionally not published. Not a constrained 4-core/8-GB certification.
+- Formal post-cutover suite: 4 passed; 3 isolated lifecycle/persistence/performance checks intentionally skipped. Desktop/mobile screenshots are in `test-results/`.
+- Pre-cutover formal database/asset archives are retained privately outside the repository. Formal assets were empty; non-empty recovery evidence comes from the isolated candidate. Backup locations and checksums are not published.
+- Accepted tags: `photography-studio-app:accepted-20261106` and `photography-studio-migrate:accepted-20261106`. The original formal image was already absent from the image store, so exact old-binary rollback was not preserved. Data backups remain available.
 
-## In Progress
+## Remaining Boundaries
 
-- Complete successful authenticated upload/version submission and authorized/unauthorized file retrieval lifecycle tests.
+- Second-computer reproduction, HTTPS/reverse-proxy acceptance and resource-constrained performance require external validation. Same-host reproduction does not prove those gates.
+- Original requirement documents are currently absent from the workspace. Earlier review is recorded in session history, but complete current FR/NFR line-by-line certification cannot be independently reconstructed. The delivery guide maps tested behavior by family without inventing missing identifiers.
+- Assigned workflow/file access and order filtering are tested. Fine-grained field minimization within assigned order detail is not certified: the shared detail query includes customer, photos and tasks. A privacy review is required before real-data use.
+- PostgreSQL adapter emits a concurrent-query deprecation warning in integration; future pg 9 compatibility needs review. Legacy React 19 peer warnings/template routes remain; unrelated routes are not fully accepted.
+- Public deployment hardening, complete dependency audit, crash/disk-full fault injection, orphan-file maintenance and exhaustive cancellation/reassignment/browser cases remain outside local acceptance. Windows standalone build was not reverified; Linux Docker passed.
+- Staff/admin instructions and measured evidence: [DELIVERY.md](DELIVERY.md). Actual contributor names/claims require team input and are not fabricated.
 
-## Not Yet Implemented or Verified
-
-- Successful upload lifecycle, assigned/unassigned staff access to real image records, revision submission and authorized download are not yet verified end to end through HTTP.
-- Operational backup/restore and performance measurement (100 orders/500 photo-version rows, five concurrent users); admin/staff guides and requirement-linked verification records.
-- Second-computer reproducibility and production HTTPS/reverse-proxy validation.
-
-## Known Gaps
-
-- Local coursework demonstrations use fixed administrator credentials `admin / 123456`, reset on each seed run. This configuration must not be exposed publicly or used with real data.
-- The original template includes unrelated editor/demo routes; the legacy rich-text editor now uses client-only loading to avoid the Node 22 server-rendering failure. Other unrelated template routes still need route-level acceptance.
-- Next.js 15.1.3 and several template dependencies are old; review and apply security updates before exposing the service beyond a trusted local network.
-- The current integration suite exercises domain services but does not yet cover the full HTTP upload lifecycle.
-- The Windows standalone build cannot create pnpm symlinks under this host's current permissions; Linux Docker image builds succeed instead.
-
-Core business workflow integration tests and a clean Docker reproduction pass. Production browser smoke tests cover sign-in, customer listing and several HTTP security rejections. The successful image lifecycle and remaining nonfunctional acceptance criteria are still outstanding; this is not a claim of complete SRS acceptance or production readiness.
+The local release is deployed; its core workflow, tested security boundaries, restart persistence, non-empty recovery and bounded HTTP performance are verified. This is not a claim that every SRS requirement or public-production gate passes.

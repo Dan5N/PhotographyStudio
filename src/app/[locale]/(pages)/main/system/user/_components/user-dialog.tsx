@@ -30,14 +30,10 @@ function Index(params: UserModalType, ref: Ref<UserModalRefType>) {
   const formRef = useRef<FromDialogRef>(null);
   const [roleOptions, setRoleOptions] = useState<Role[]>([]);
   const { toast } = useToast();
-  useEffect(() => {
-    getAllRoleApi.mutate();
-  }, []);
-
   const setModel = (open: boolean, type: ViewType, user?: Omit<User, "password">) => {
     setOpen(open);
     setViewType(type);
-    user && setUser(user);
+    setUser(user);
   };
   useEffect(() => {
     if (open) {
@@ -62,6 +58,10 @@ function Index(params: UserModalType, ref: Ref<UserModalRefType>) {
       setRoleOptions(data);
     },
   });
+  const { mutate: loadRoles } = getAllRoleApi;
+  useEffect(() => {
+    loadRoles();
+  }, [loadRoles]);
   const userUpdateApi = api.user.upDateUserById.useMutation({
     async onSuccess(data) {
       if (data.id) {

@@ -52,7 +52,7 @@ function Index(params: RoleModalType, ref: Ref<RoleModalRefType>) {
   const setModel = (open: boolean, type: ViewType, role?: Role) => {
     setOpen(open);
     setViewType(type);
-    role && setId(role.id);
+    setId(role?.id);
     if (open) {
       setSelMenus([]);
       if (role && ["view", "edit"].includes(type)) {

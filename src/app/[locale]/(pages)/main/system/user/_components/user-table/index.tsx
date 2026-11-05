@@ -3,14 +3,14 @@
 import { reload } from "@/app/actions";
 import { api } from "@/trpc/react";
 import { usePathname } from "next/navigation";
-import { useMemo, useRef } from "react";
+import { useState } from "react";
 import { createColumns } from "./columns";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/table/data-table";
-import UserDialog, { UserModalRefType } from "../user-dialog";
-import { User } from "@prisma/client";
+import UserDialog, { type UserModalRefType } from "../user-dialog";
+import { type User } from "@prisma/client";
 
 interface UserTableProps {
   list: Omit<User, "password">[];
@@ -19,7 +19,7 @@ interface UserTableProps {
 function UserTable(params: UserTableProps) {
   const { list, total } = params;
   const pathName = usePathname();
-  const userModalRef = useRef<UserModalRefType>(null);
+  const [userModal, setUserModal] = useState<UserModalRefType | null>(null);
 
   const userDeleteApi = api.user.deleteUserById.useMutation({
     onSuccess() {
@@ -33,21 +33,22 @@ function UserTable(params: UserTableProps) {
   const reloadList = () => {
     reload(pathName);
   };
-  const columns = useMemo(() => createColumns(userModalRef, deleteUser), []);
+  const openDialog: UserModalRefType["setModel"] = (...args) => userModal?.setModel(...args);
+  const columns = createColumns(openDialog, deleteUser);
   return (
     <>
       <div className="flex items-start justify-end">
         <Button
           size="sm"
           variant="outline"
-          onClick={() => userModalRef.current?.setModel(true, "add")}
+          onClick={() => userModal?.setModel(true, "add")}
         >
           <Plus className="mr-2 h-4 w-4" /> 新增用户
         </Button>
       </div>
       <Separator className="mb-4 mt-4" />
       <DataTable columns={columns} data={list} totalItems={total} />
-      <UserDialog ref={userModalRef} reloadList={reloadList} />
+      <UserDialog ref={setUserModal} reloadList={reloadList} />
     </>
   );
 }

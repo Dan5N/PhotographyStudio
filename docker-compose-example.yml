@@ -1,16 +1,62 @@
-version: "1.0"
+name: photography-studio
+
 services:
-  admin:
-    platform: "linux/amd64"
+  migrate:
     build:
       context: .
-      dockerfile: Dockerfile
+      target: tooling
       args:
-        NEXT_PUBLIC_CLIENTVAR: "clientvar"
-    working_dir: /app
-    ports:
-      - "3000:3000"
-    image: ray-docker
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org}
     environment:
-      - DATABASE_URL="xxxx"
-      - NEXTAUTH_SECRET="xxxx"
+      DATABASE_URL: postgresql://studio:${POSTGRES_PASSWORD}@db:5432/studio
+      DEMO_PASSWORD: ${DEMO_PASSWORD:?Set DEMO_PASSWORD in .env}
+    command: ["sh", "-c", "pnpm exec prisma migrate deploy && pnpm db:seed:studio"]
+    depends_on:
+      db:
+        condition: service_healthy
+  app:
+    build:
+      context: .
+      target: runner
+      args:
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org}
+    environment:
+      DATABASE_URL: postgresql://studio:${POSTGRES_PASSWORD}@db:5432/studio
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?Set NEXTAUTH_SECRET in .env}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      APP_CURRENCY: ${APP_CURRENCY:-CNY}
+      APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Shanghai}
+      ASSET_ROOT: /app/assets
+      HOSTNAME: 0.0.0.0
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    volumes:
+      - assets:/app/assets
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: studio
+      POSTGRES_USER: studio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U studio -d studio"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  assets:

@@ -7,7 +7,7 @@ import { requireOffice, type Actor } from "@/server/permissions";
 import { schedule, completeShoot, cancelOrder, selectPhotos, changeTask, sendDelivery, acknowledgeDelivery } from "@/server/workflow";
 
 const officeProcedure = protectedProcedure.use(({ ctx, next }) => {
-  requireOffice(ctx.session.user as Actor);
+  requireOffice(ctx.session.user);
   return next({ ctx });
 });
 const customerInput = z.object({ name: z.string().trim().min(1).max(120), phone: z.string().trim().min(1).max(40), email: z.string().email().optional().or(z.literal("")), notes: z.string().max(4000).default(""), active: z.boolean().default(true) });

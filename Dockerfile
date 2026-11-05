@@ -1,12 +1,14 @@
-FROM node:22-bookworm-slim AS base
+FROM node:24-bookworm-slim AS base
 RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
-RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
+RUN npm install --global pnpm@10.34.9
 WORKDIR /app
 
 FROM base AS tooling
-COPY package.json pnpm-lock.yaml ./
+ARG NPM_REGISTRY=https://registry.npmjs.org
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY prisma ./prisma
-RUN pnpm install --frozen-lockfile
+COPY prisma.config.ts ./
+RUN pnpm install --frozen-lockfile --registry=$NPM_REGISTRY
 COPY . .
 
 FROM tooling AS builder
